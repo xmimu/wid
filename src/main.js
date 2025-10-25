@@ -130,8 +130,8 @@ async function browseBankPath() {
   }
 }
 
-// 测试WAAPI连接
-async function testWaapiConnection() {
+// 测试WAAPI连接（调用 waapi-query.js 中的函数）
+async function testWaapiConnectionHandler() {
   const host = document.querySelector('#waapiHost').value;
   const port = document.querySelector('#waapiPort').value;
   
@@ -144,15 +144,15 @@ async function testWaapiConnection() {
   config.waapi.port = port;
   saveConfig();
 
-  // 调用 Rust 后端测试连接
   try {
-    const result = await invoke("test_waapi_connection", { host, port });
-    showMessage("✅ " + result);
+    const message = await testWaapiConnection(host, port);
+    showMessage(message);
   } catch (error) {
     showMessage("❌ " + error);
     console.error("WAAPI 连接测试失败:", error);
   }
 }
+
 
 // 执行搜索
 async function performSearch(tab) {
@@ -198,7 +198,7 @@ async function performSearch(tab) {
   try {
     let results = [];
     
-    // 根据不同标签页调用相应的Rust后端API
+    // 根据不同标签页调用相应的API
     if (tab === 'wwise') {
       results = await invoke("search_wwise_project", { 
         directory: config.wwise.projPath, 
@@ -206,12 +206,19 @@ async function performSearch(tab) {
         idTypes: selectedTypes 
       });
     } else if (tab === 'waapi') {
-      results = await invoke("search_waapi", { 
-        host: config.waapi.host, 
-        port: config.waapi.port, 
-        idString: searchValue, 
-        idTypes: selectedTypes 
-      });
+      // 使用 JavaScript WAAPI 查询（调用 waapi-query.js）
+      const waapiResults = await searchWithWAAPI(
+        config.waapi.host, 
+        config.waapi.port, 
+        searchValue, 
+        selectedTypes
+      );
+      
+      // 转换结果格式以匹配显示需求
+      results = waapiResults.map(item => ({
+        name: item.name,
+        id: item.id + (item.shortId && item.shortId !== 'N/A' ? ` (ShortID: ${item.shortId})` : '')
+      }));
     } else if (tab === 'bank') {
       results = await invoke("search_bank_directory", { 
         directory: config.bank.dirPath, 
@@ -489,7 +496,7 @@ window.addEventListener("DOMContentLoaded", () => {
   // 浏览按钮
   document.querySelector('#wwiseBrowseBtn').addEventListener('click', browseProjPath);
   document.querySelector('#bankBrowseBtn').addEventListener('click', browseBankPath);
-  document.querySelector('#waapiTestBtn').addEventListener('click', testWaapiConnection);
+  document.querySelector('#waapiTestBtn').addEventListener('click', testWaapiConnectionHandler);
 
   // 绑定共享搜索按钮事件
   document.querySelector('#sharedSearchBtn').addEventListener('click', () => {

@@ -1,6 +1,5 @@
 use std::path::Path;
 use std::fs;
-use wamp_async::Client;
 use serde::{Deserialize, Serialize};
 use glob::glob;
 use rayon::prelude::*;
@@ -70,80 +69,6 @@ fn validate_bank_directory(path: String) -> Result<bool, String> {
     } else {
         Err("目录中未找到 SoundbanksInfo.xml 或 SoundbanksInfo.json".to_string())
     }
-}
-
-/// 测试 WAAPI 连接
-/// 
-/// # 参数
-/// * `host` - WAAPI 服务器地址 (例如: "127.0.0.1")
-/// * `port` - WAAPI 服务器端口 (例如: "8080")
-/// 
-/// # 返回
-/// * `Ok(String)` - 连接成功，返回 Wwise 版本信息
-/// * `Err(String)` - 连接失败，返回错误信息
-#[tauri::command]
-async fn test_waapi_connection(host: String, port: String) -> Result<String, String> {
-    use std::time::Duration;
-    use tokio::time::timeout;
-    
-    // 1. 构建 WebSocket URL
-    let url = format!("ws://{}:{}/waapi", host, port);
-    
-    // 2. 尝试连接（添加 10 秒超时）
-    let connect_future = Client::connect(&url, None);
-    let (client, (event_loop, _event_loop_handle)) = timeout(Duration::from_secs(10), connect_future)
-        .await
-        .map_err(|_| "连接超时（10秒）。请确保 Wwise 已启动并开启了 WAAPI。".to_string())?
-        .map_err(|e| format!("连接失败: {}。请检查 Host 和 Port 是否正确。", e))?;
-    
-    // 3. 启动事件循环（在后台处理 WAMP 消息）
-    let event_task = tokio::spawn(async move {
-        let _ = event_loop.await;
-    });
-    
-    // 4. 等待连接稳定
-    tokio::time::sleep(Duration::from_millis(1000)).await;
-    
-    // 5. 调用 ak.wwise.core.getInfo 测试连接
-    let call_future = client.call("ak.wwise.core.getInfo", None, None);
-    let result = timeout(Duration::from_secs(10), call_future)
-        .await
-        .map_err(|_| "RPC 调用超时（10秒）。WAAPI 可能未响应。".to_string())?
-        .map_err(|e| format!("调用 RPC 失败: {}。请确保 Wwise 中启用了 WAAPI。", e))?;
-    
-    // 6. 解析响应
-    let response = if let (_, Some(kwargs)) = result {
-        // 解析 version.displayName
-        let version = kwargs
-            .get("version")
-            .and_then(|v| v.get("displayName"))
-            .and_then(|v| v.as_str())
-            .unwrap_or("Unknown");
-        
-        // 解析 platform (直接是字符串)
-        let platform = kwargs
-            .get("platform")
-            .and_then(|p| p.as_str())
-            .unwrap_or("Unknown");
-        
-        // 解析 displayName
-        let display_name = kwargs
-            .get("displayName")
-            .and_then(|d| d.as_str())
-            .unwrap_or("Wwise");
-        
-        format!("✅ 连接成功！\n\n应用: {}\nWwise 版本: {}\n平台: {}", display_name, version, platform)
-    } else {
-        "✅ 连接成功！但无法解析 Wwise 版本信息。".to_string()
-    };
-    
-    // 7. 断开连接 - drop client 会自动关闭连接
-    drop(client);
-    
-    // 8. 等待事件循环结束（最多 2 秒）
-    let _ = timeout(Duration::from_secs(2), event_task).await;
-    
-    Ok(response)
 }
 
 /// 在 Wwise 工程文件中搜索 ID
@@ -260,40 +185,6 @@ fn search_wwise_project(
     Ok(results)
 }
 
-/// 通过 WAAPI 查询 ID
-/// 
-/// # 参数
-/// * `host` - WAAPI 服务器地址（例如: "127.0.0.1"）
-/// * `port` - WAAPI 服务器端口（例如: "8080"）
-/// * `id_string` - 要搜索的 ID 字符串
-/// * `id_types` - 要搜索的 ID 类型数组，可选值: ["GUID", "ShortID", "MediaID"]
-/// 
-/// # 返回
-/// * `Ok(Vec<SearchResult>)` - 搜索结果列表
-/// * `Err(String)` - 查询失败，返回错误信息
-#[tauri::command]
-async fn search_waapi(
-    _host: String,
-    _port: String,
-    id_string: String,
-    _id_types: Vec<String>,
-) -> Result<Vec<SearchResult>, String> {
-    // TODO: 实现 WAAPI 查询逻辑
-    // 1. 连接到 WAAPI
-    // 2. 根据 id_string 和 id_types 调用相应的 WAAPI 函数
-    //    例如: ak.wwise.core.object.get
-    // 3. 解析返回结果
-    // 4. 断开连接
-    
-    // 示例返回（待实现）
-    Ok(vec![
-        SearchResult {
-            name: format!("WAAPI 对象 - {}", id_string),
-            id: id_string.clone(),
-        }
-    ])
-}
-
 /// 在 Bank 目录中搜索 ID
 /// 
 /// # 参数
@@ -334,9 +225,7 @@ pub fn run() {
             greet, 
             validate_wwise_directory, 
             validate_bank_directory,
-            test_waapi_connection,
             search_wwise_project,
-            search_waapi,
             search_bank_directory
         ])
         .run(tauri::generate_context!())
