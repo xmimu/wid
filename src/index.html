@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="bootstrap.min.css">
+  <link rel="stylesheet" href="styles.css">
+  <title>ID 查询工具</title>
+</head>
+<body>
+  <div class="container-fluid">
+    <div class="card">
+      <div class="card-header bg-primary text-white">
+        <h2 class="mb-0">Wwise ID 查询工具</h2>
+      </div>
+
+      <!-- 标签页导航 -->
+      <ul class="nav nav-tabs tab-header" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="wwise-tab" data-bs-toggle="tab" data-bs-target="#wwise-content" type="button" role="tab" aria-controls="wwise-content" aria-selected="true">
+            📁 Wwise 工程文件
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="waapi-tab" data-bs-toggle="tab" data-bs-target="#waapi-content" type="button" role="tab" aria-controls="waapi-content" aria-selected="false">
+            🔌 WAAPI
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="bank-tab" data-bs-toggle="tab" data-bs-target="#bank-content" type="button" role="tab" aria-controls="bank-content" aria-selected="false">
+            🏦 Bank 目录
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="config-tab" data-bs-toggle="tab" data-bs-target="#config-content" type="button" role="tab" aria-controls="config-content" aria-selected="false">
+            ⚙️ 配置
+          </button>
+        </li>
+      </ul>
+
+      <!-- 共享搜索区域 -->
+      <div class="card-body border-bottom" id="sharedSearchArea">
+        <!-- 输入区域 -->
+        <div class="row mb-3">
+          <div class="col-md-12">
+            <label for="sharedIdInput" class="form-label"><strong>输入ID字符串</strong></label>
+            <input 
+              type="text" 
+              class="form-control form-control-lg" 
+              id="sharedIdInput" 
+              placeholder="请输入要查询的ID..."
+              autofocus>
+          </div>
+        </div>
+
+        <!-- 复选框区域 -->
+        <div class="row mb-3">
+          <div class="col-md-12">
+            <label class="form-label"><strong>选择ID类型</strong></label>
+            <div class="form-check form-check-inline">
+              <input 
+                class="form-check-input" 
+                type="checkbox" 
+                id="sharedGuidCheckbox" 
+                value="GUID"
+                checked>
+              <label class="form-check-label" for="sharedGuidCheckbox">
+                GUID
+              </label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input 
+                class="form-check-input" 
+                type="checkbox" 
+                id="sharedShortIdCheckbox" 
+                value="ShortID"
+                checked>
+              <label class="form-check-label" for="sharedShortIdCheckbox">
+                ShortID
+              </label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input 
+                class="form-check-input" 
+                type="checkbox" 
+                id="sharedMediaIdCheckbox" 
+                value="MediaID"
+                checked>
+              <label class="form-check-label" for="sharedMediaIdCheckbox">
+                MediaID
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- 操作按钮 -->
+        <div class="row">
+          <div class="col-md-12">
+            <button class="btn btn-primary btn-lg me-2" id="sharedSearchBtn">
+              🔍 搜索
+            </button>
+            <button class="btn btn-secondary btn-lg" id="sharedClearBtn">
+              🔄 清空
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-content">
+        <!-- 标签页 1: Wwise 工程文件 -->
+        <div class="tab-pane fade show active" id="wwise-content" role="tabpanel" aria-labelledby="wwise-tab">
+          <div class="card-body">
+            <!-- 配置提示 -->
+            <div class="alert alert-warning mb-4" id="wwiseConfigAlert" style="display: none;">
+              ⚠️ 请先在"配置"标签页设置 Wwise 工程目录
+            </div>
+
+            <!-- 结果表格 -->
+            <div class="row">
+              <div class="col-md-12">
+                <label class="form-label"><strong>搜索结果</strong></label>
+                <div class="table-responsive">
+                  <table class="table table-striped table-hover table-sm">
+                    <thead class="table-dark">
+                      <tr>
+                        <th style="width: 50%;">名称 (Name)</th>
+                        <th style="width: 50%;">ID</th>
+                      </tr>
+                    </thead>
+                    <tbody class="resultsTableBody" data-tab="wwise">
+                      <tr>
+                        <td colspan="2" class="text-center text-muted">
+                          请输入ID并点击搜索
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- 统计信息和分页 -->
+            <div class="row mt-3 align-items-center">
+              <div class="col-md-6">
+                <small class="text-muted">
+                  共找到 <strong class="resultCount" data-tab="wwise">0</strong> 条结果
+                  <span class="pageInfo" data-tab="wwise"></span>
+                </small>
+              </div>
+              <div class="col-md-6">
+                <nav aria-label="分页导航">
+                  <ul class="pagination pagination-sm justify-content-end mb-0" data-tab="wwise">
+                  </ul>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 标签页 2: WAAPI -->
+        <div class="tab-pane fade" id="waapi-content" role="tabpanel" aria-labelledby="waapi-tab">
+          <div class="card-body">
+            <!-- 配置提示 -->
+            <div class="alert alert-warning mb-4" id="waapiConfigAlert" style="display: none;">
+              ⚠️ 请先在"配置"标签页设置 WAAPI 连接信息
+            </div>
+
+            <!-- 结果表格 -->
+            <div class="row">
+              <div class="col-md-12">
+                <label class="form-label"><strong>搜索结果</strong></label>
+                <div class="table-responsive">
+                  <table class="table table-striped table-hover table-sm">
+                    <thead class="table-dark">
+                      <tr>
+                        <th style="width: 50%;">名称 (Name)</th>
+                        <th style="width: 50%;">ID</th>
+                      </tr>
+                    </thead>
+                    <tbody class="resultsTableBody" data-tab="waapi">
+                      <tr>
+                        <td colspan="2" class="text-center text-muted">
+                          请输入ID并点击搜索
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- 统计信息和分页 -->
+            <div class="row mt-3 align-items-center">
+              <div class="col-md-6">
+                <small class="text-muted">
+                  共找到 <strong class="resultCount" data-tab="waapi">0</strong> 条结果
+                  <span class="pageInfo" data-tab="waapi"></span>
+                </small>
+              </div>
+              <div class="col-md-6">
+                <nav aria-label="分页导航">
+                  <ul class="pagination pagination-sm justify-content-end mb-0" data-tab="waapi">
+                  </ul>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 标签页 3: Bank 目录 -->
+        <div class="tab-pane fade" id="bank-content" role="tabpanel" aria-labelledby="bank-tab">
+          <div class="card-body">
+            <!-- 配置提示 -->
+            <div class="alert alert-warning mb-4" id="bankConfigAlert" style="display: none;">
+              ⚠️ 请先在"配置"标签页设置 Bank 目录
+            </div>
+
+            <!-- 结果表格 -->
+            <div class="row">
+              <div class="col-md-12">
+                <label class="form-label"><strong>搜索结果</strong></label>
+                <div class="table-responsive">
+                  <table class="table table-striped table-hover table-sm">
+                    <thead class="table-dark">
+                      <tr>
+                        <th style="width: 50%;">名称 (Name)</th>
+                        <th style="width: 50%;">ID</th>
+                      </tr>
+                    </thead>
+                    <tbody class="resultsTableBody" data-tab="bank">
+                      <tr>
+                        <td colspan="2" class="text-center text-muted">
+                          请输入ID并点击搜索
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- 统计信息和分页 -->
+            <div class="row mt-3 align-items-center">
+              <div class="col-md-6">
+                <small class="text-muted">
+                  共找到 <strong class="resultCount" data-tab="bank">0</strong> 条结果
+                  <span class="pageInfo" data-tab="bank"></span>
+                </small>
+              </div>
+              <div class="col-md-6">
+                <nav aria-label="分页导航">
+                  <ul class="pagination pagination-sm justify-content-end mb-0" data-tab="bank">
+                  </ul>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 标签页 4: 配置 -->
+        <div class="tab-pane fade" id="config-content" role="tabpanel" aria-labelledby="config-tab">
+          <div class="card-body">
+            <!-- Wwise工程配置 -->
+            <div class="row mb-4 p-3 border rounded">
+              <div class="col-md-12">
+                <h5 class="mb-3">📁 Wwise 工程配置</h5>
+                <label for="wwiseProjPath" class="form-label"><strong>Wwise 工程目录</strong></label>
+                <div class="input-group">
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="wwiseProjPath" 
+                    placeholder="包含 .wproj 文件的目录路径"
+                    value="">
+                  <button class="btn btn-outline-secondary" type="button" id="wwiseBrowseBtn">
+                    浏览...
+                  </button>
+                </div>
+                <small class="text-muted d-block mt-2">示例: C:\Projects\MyWwiseProject</small>
+              </div>
+            </div>
+
+            <!-- WAAPI配置 -->
+            <div class="row mb-4 p-3 border rounded">
+              <div class="col-md-12">
+                <h5 class="mb-3">🔌 WAAPI 连接配置</h5>
+                <div class="row">
+                  <div class="col-md-6">
+                    <label for="waapiHost" class="form-label"><strong>Host</strong></label>
+                    <input 
+                      type="text" 
+                      class="form-control" 
+                      id="waapiHost" 
+                      placeholder="WAAPI 服务器地址"
+                      value="127.0.0.1">
+                  </div>
+                  <div class="col-md-6">
+                    <label for="waapiPort" class="form-label"><strong>Port</strong></label>
+                    <input 
+                      type="number" 
+                      class="form-control" 
+                      id="waapiPort" 
+                      placeholder="WAAPI 服务器端口"
+                      value="8080"
+                      min="1"
+                      max="65535">
+                  </div>
+                </div>
+                <div class="mt-3">
+                  <button class="btn btn-sm btn-outline-primary" type="button" id="waapiTestBtn">
+                    🧪 测试连接
+                  </button>
+                  <small class="text-muted d-block mt-2">默认连接地址: ws://127.0.0.1:8080</small>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bank目录配置 -->
+            <div class="row mb-4 p-3 border rounded">
+              <div class="col-md-12">
+                <h5 class="mb-3">🏦 Bank 目录配置</h5>
+                <label for="bankDirPath" class="form-label"><strong>Bank 目录</strong></label>
+                <div class="input-group">
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="bankDirPath" 
+                    placeholder="包含 SoundbanksInfo.xml 或 .json 的目录路径"
+                    value="">
+                  <button class="btn btn-outline-secondary" type="button" id="bankBrowseBtn">
+                    浏览...
+                  </button>
+                </div>
+                <small class="text-muted d-block mt-2">示例: C:\Projects\MyGame\Soundbanks</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
