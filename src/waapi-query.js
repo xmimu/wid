@@ -78,14 +78,14 @@ async function searchWaapiByWaql(session, idString, idTypes) {
           waql = `$ "{${idString}}"`;
         } else {
           // 部分 GUID，使用通配符
-          waql = `from object "*" where id =* "*${idString}*"`;
+          waql = `where id =* "*${idString}*"`;
         }
       } else if (idType === 'ShortID') {
         // WAQL: 查询 ShortID
-        waql = `from type Sound, SoundBank, Event, MusicSegment, DialogueEvent, Actor, AuxBus, RandomOrSequenceContainer, SwitchContainer, BlendContainer where shortId = ${idString}`;
+        waql = `$ where shortId = ${idString}`;
       } else if (idType === 'MediaID') {
         // WAQL: 查询包含特定 MediaID 的源文件
-        waql = `from type Sound where mediaId = ${idString}`;
+        waql = `$ where mediaId = ${idString}`;
       }
       
       if (!waql) continue;
