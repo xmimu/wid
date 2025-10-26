@@ -75,8 +75,11 @@ WID (Wwise ID) 是一个专门为音频开发者设计的桌面应用程序，�
 ### 下载安装
 1. 前往 [Releases](https://github.com/xmimu/wid/releases) 页面
 2. 下载 Windows 版本的安装包：
-   - `wid_x.x.x_x64.msi` (推荐) 或 `wid_x.x.x_x64.exe`
+   - **安装版** (推荐): `wid_x.x.x_x64_zh-CN.msi` - 自动安装，处理所有依赖
+   - **便携版**: `wid_x.x.x_x64_zh-CN.exe` - 安装包形式，支持便携安装
 3. 运行安装程序并按照提示完成安装
+
+> **注意**: 所有安装包均为中文版本，适合中文环境使用
 
 > **注意**: 目前本工具仅在 Windows 平台上开发和测试，macOS 和 Linux 版本暂不提供支持。
 
