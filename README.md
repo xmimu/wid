@@ -24,6 +24,16 @@ WID (Wwise ID) 是一个专门为音频开发者设计的桌面应用程序，�
 > **平台支持**: 目前仅支持 Windows 10/11 平台  
 > **测试版本**: 已在 Wwise 2024 上完成测试和验证
 
+## 📸 软件截图
+
+<div align="center">
+
+<img src="img/screen.png" alt="WID 软件界面" style="width: 80%; max-width: 800px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+
+*WID 主界面 - 多标签页设计，支持 Wwise 工程文件、WAAPI 实时查询、Bank 目录查询*
+
+</div>
+
 ### 🎯 解决的问题
 
 - **ID 查询困难**: 在大型音频项目中快速定位特定的 GUID、ShortID 或 MediaID
