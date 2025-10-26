@@ -9,7 +9,10 @@ use roxmltree::Document;
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SearchResult {
     pub name: String,
-    pub id: String,
+    pub object_type: String,
+    pub guid: String,
+    pub short_id: String,
+    pub media_id: String,
 }
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
@@ -125,6 +128,9 @@ fn search_wwise_project(
             
             let mut file_results = Vec::new();
             
+            // 检查输入是否为纯数字
+            let is_numeric = id_string.chars().all(|c| c.is_ascii_digit());
+            
             // 根据 id_types 执行不同的搜索
             for id_type in &id_types {
                 match id_type.as_str() {
@@ -134,29 +140,42 @@ fn search_wwise_project(
                             let id = node.attribute("ID").unwrap_or("");
                             if id.to_lowercase().contains(&query) {
                                 let name = node.attribute("Name").unwrap_or("未命名");
+                                let short_id = node.attribute("ShortID").unwrap_or("");
                                 file_results.push(SearchResult {
-                                    name: format!("{} ({})", name, node.tag_name().name()),
-                                    id: id.to_string(),
+                                    name: name.to_string(),
+                                    object_type: node.tag_name().name().to_string(),
+                                    guid: id.to_string(),
+                                    short_id: short_id.to_string(),
+                                    media_id: String::new(),
                                 });
                             }
                         }
                     }
                     "ShortID" => {
-                        // 搜索 ShortID 属性
+                        // 搜索 ShortID 属性 - 只有纯数字才查询
+                        if !is_numeric {
+                            continue; // 跳过非数字输入
+                        }
                         for node in doc.descendants().filter(|n| n.has_attribute("ShortID")) {
                             let short_id = node.attribute("ShortID").unwrap_or("");
                             if short_id.to_lowercase().contains(&query) {
                                 let name = node.attribute("Name").unwrap_or("未命名");
-                                let id = node.attribute("ID").unwrap_or(short_id);
+                                let id = node.attribute("ID").unwrap_or("");
                                 file_results.push(SearchResult {
-                                    name: format!("{} (ShortID: {})", name, short_id),
-                                    id: id.to_string(),
+                                    name: name.to_string(),
+                                    object_type: node.tag_name().name().to_string(),
+                                    guid: id.to_string(),
+                                    short_id: short_id.to_string(),
+                                    media_id: String::new(),
                                 });
                             }
                         }
                     }
                     "MediaID" => {
-                        // 搜索 MediaID 标签
+                        // 搜索 MediaID 标签 - 只有纯数字才查询
+                        if !is_numeric {
+                            continue; // 跳过非数字输入
+                        }
                         for node in doc.descendants().filter(|n| n.has_tag_name("MediaID")) {
                             let media_id = node.attribute("ID").unwrap_or("");
                             if media_id.to_lowercase().contains(&query) {
@@ -164,10 +183,14 @@ fn search_wwise_project(
                                 if let Some(parent) = node.parent_element() {
                                     if let Some(grandparent) = parent.parent_element() {
                                         let name = grandparent.attribute("Name").unwrap_or("未命名");
-                                        let id = grandparent.attribute("ID").unwrap_or(media_id);
+                                        let id = grandparent.attribute("ID").unwrap_or("");
+                                        let short_id = grandparent.attribute("ShortID").unwrap_or("");
                                         file_results.push(SearchResult {
-                                            name: format!("{} (MediaID: {})", name, media_id),
-                                            id: id.to_string(),
+                                            name: name.to_string(),
+                                            object_type: grandparent.tag_name().name().to_string(),
+                                            guid: id.to_string(),
+                                            short_id: short_id.to_string(),
+                                            media_id: media_id.to_string(),
                                         });
                                     }
                                 }
@@ -211,7 +234,10 @@ fn search_bank_directory(
     Ok(vec![
         SearchResult {
             name: format!("Bank 对象 - {}", id_string),
-            id: id_string.clone(),
+            object_type: "Bank".to_string(),
+            guid: String::new(),
+            short_id: String::new(),
+            media_id: String::new(),
         }
     ])
 }

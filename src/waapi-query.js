@@ -78,13 +78,21 @@ async function searchWaapiByWaql(session, idString, idTypes) {
           waql = `$ "{${idString}}"`;
         } else {
           // 部分 GUID，使用通配符
-          waql = `where id =* "*${idString}*"`;
+          waql = `$ where id = "*${idString}*"`;
         }
       } else if (idType === 'ShortID') {
-        // WAQL: 查询 ShortID
+        // WAQL: 查询 ShortID - 只有纯数字才查询
+        if (!/^\d+$/.test(idString)) {
+          console.log(`跳过 ShortID 查询: "${idString}" 不是纯数字`);
+          continue;
+        }
         waql = `$ where shortId = ${idString}`;
       } else if (idType === 'MediaID') {
-        // WAQL: 查询包含特定 MediaID 的源文件
+        // WAQL: 查询包含特定 MediaID 的源文件 - 只有纯数字才查询
+        if (!/^\d+$/.test(idString)) {
+          console.log(`跳过 MediaID 查询: "${idString}" 不是纯数字`);
+          continue;
+        }
         waql = `$ where mediaId = ${idString}`;
       }
       
@@ -104,11 +112,20 @@ async function searchWaapiByWaql(session, idString, idTypes) {
       
       if (result.kwargs.return && result.kwargs.return.length > 0) {
         result.kwargs.return.forEach(obj => {
+          // 根据查询类型确定 MediaID
+          let mediaId = '';
+          if (idType === 'MediaID') {
+            // 对于 MediaID 查询，返回 idString 作为 MediaID
+            mediaId = idString;
+          }
+          
           results.push({
-            name: `${obj.name} (${obj.type}) - ${idType}`,
-            id: obj.id,
-            shortId: obj.shortId || 'N/A',
-            path: obj.path
+            name: obj.name || '未命名',
+            object_type: obj.type || '',
+            guid: obj.id || '',
+            short_id: obj.shortId || '',
+            media_id: mediaId,
+            search_type: idType  // 记录搜索类型，用于调试
           });
         });
       }

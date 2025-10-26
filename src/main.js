@@ -207,18 +207,13 @@ async function performSearch(tab) {
       });
     } else if (tab === 'waapi') {
       // 使用 JavaScript WAAPI 查询（调用 waapi-query.js）
-      const waapiResults = await searchWithWAAPI(
+      results = await searchWithWAAPI(
         config.waapi.host, 
         config.waapi.port, 
         searchValue, 
         selectedTypes
       );
-      
-      // 转换结果格式以匹配显示需求
-      results = waapiResults.map(item => ({
-        name: item.name,
-        id: item.id + (item.shortId && item.shortId !== 'N/A' ? ` (ShortID: ${item.shortId})` : '')
-      }));
+      // WAAPI 结果已经是新格式，不需要转换
     } else if (tab === 'bank') {
       results = await invoke("search_bank_directory", { 
         directory: config.bank.dirPath, 
@@ -254,7 +249,7 @@ function displayResultsWithPagination(tab) {
   if (totalResults.length === 0) {
     resultsTableBody.innerHTML = `
       <tr>
-        <td colspan="2" class="text-center text-muted">
+        <td colspan="5" class="text-center text-muted">
           未找到匹配的结果
         </td>
       </tr>
@@ -275,8 +270,11 @@ function displayResultsWithPagination(tab) {
   pageResults.forEach(item => {
     const row = document.createElement('tr');
     row.innerHTML = `
-      <td>${item.name}</td>
-      <td><code>${item.id}</code></td>
+      <td>${item.name || ''}</td>
+      <td>${item.object_type || ''}</td>
+      <td><code>${item.guid || ''}</code></td>
+      <td>${item.short_id || ''}</td>
+      <td>${item.media_id || ''}</td>
     `;
     resultsTableBody.appendChild(row);
   });
@@ -392,7 +390,7 @@ function clearAll(tab) {
   idInput.value = '';
   resultsTableBody.innerHTML = `
     <tr>
-      <td colspan="2" class="text-center text-muted">
+      <td colspan="5" class="text-center text-muted">
         请输入ID并点击搜索
       </td>
     </tr>
