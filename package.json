@@ -9,5 +9,8 @@
   "devDependencies": {
     "@tauri-apps/cli": "^2",
     "autobahn": "19.12.1"
+  },
+  "dependencies": {
+    "@tauri-apps/plugin-opener": "^2.5.0"
   }
 }

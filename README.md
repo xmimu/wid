@@ -3,6 +3,8 @@
 <div align="center">
 
 ![Wwise ID查询工具](https://img.shields.io/badge/Wwise-ID%20查询工具-blue?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTIxIDNIMTVWNUgxOVYxOUg1VjVIOVYzSDNWMjFIMjFWM1oiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPgo=)
+![Platform](https://img.shields.io/badge/Platform-Windows%2010%2F11-blue?style=for-the-badge&logo=windows)
+![Wwise](https://img.shields.io/badge/Wwise-2024%20测试版-green?style=for-the-badge)
 ![Tauri](https://img.shields.io/badge/Tauri-2.0-orange?style=for-the-badge&logo=tauri)
 ![Rust](https://img.shields.io/badge/Rust-1.70+-red?style=for-the-badge&logo=rust)
 ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
@@ -18,6 +20,9 @@
 ## 📋 项目简介
 
 WID (Wwise ID) 是一个专门为音频开发者设计的桌面应用程序，旨在简化 Wwise 音频项目中的 ID 查询和管理工作。该工具支持多种查询方式，包括本地 Wwise 工程文件查询、WAAPI 实时查询和 SoundBank 文件查询。
+
+> **平台支持**: 目前仅支持 Windows 10/11 平台  
+> **测试版本**: 已在 Wwise 2024 上完成测试和验证
 
 ### 🎯 解决的问题
 
@@ -52,19 +57,23 @@ WID (Wwise ID) 是一个专门为音频开发者设计的桌面应用程序，�
 ## 🚀 安装说明
 
 ### 系统要求
-- **操作系统**: Windows 10/11, macOS 10.15+, Ubuntu 18.04+
+- **操作系统**: Windows 10/11 (当前仅支持 Windows 平台)
+- **Wwise 版本**: 已在 Wwise 2024 上测试，其他版本可能需要额外配置
 - **内存**: 最少 512MB RAM
 - **存储**: 约 50MB 可用空间
 
 ### 下载安装
 1. 前往 [Releases](https://github.com/xmimu/wid/releases) 页面
-2. 下载适合您操作系统的安装包：
-   - Windows: `wid_x.x.x_x64.msi` 或 `wid_x.x.x_x64.exe`
-   - macOS: `wid_x.x.x_x64.dmg`
-   - Linux: `wid_x.x.x_amd64.deb` 或 `wid_x.x.x_amd64.AppImage`
+2. 下载 Windows 版本的安装包：
+   - `wid_x.x.x_x64.msi` (推荐) 或 `wid_x.x.x_x64.exe`
 3. 运行安装程序并按照提示完成安装
 
+> **注意**: 目前本工具仅在 Windows 平台上开发和测试，macOS 和 Linux 版本暂不提供支持。
+
 ### 开发版安装
+
+> **开发环境要求**: 需要 Windows 10/11 + Rust 1.70+ + Node.js 18+
+
 ```bash
 # 克隆仓库
 git clone https://github.com/xmimu/wid.git
@@ -284,6 +293,29 @@ pnpm tauri build --target x86_64-unknown-linux-gnu
 - **Issues**: [GitHub Issues](https://github.com/xmimu/wid/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/xmimu/wid/discussions)
 - **Email**: [1101588023@qq.com](mailto:1101588023@qq.com)
+
+## 💝 支持项目
+
+如果这个工具对您有帮助，欢迎通过以下方式支持项目发展：
+
+### ☕ 请我喝杯咖啡
+
+<div align="center">
+
+<img src="img/wechat-pay.png" alt="微信支付" width="400" height="600">
+
+**微信扫码捐赠**
+
+</div>
+
+### 🌟 其他支持方式
+
+- ⭐ 给项目点个 Star
+- 🐛 反馈 Bug 和建议
+- 📢 推荐给其他 Wwise 开发者
+- 🤝 贡献代码和文档
+
+> 💡 **说明**: 捐赠完全自愿，无论是否捐赠都不会影响软件的使用。您的每一份支持都是对开发者的鼓励！
 
 ---
 

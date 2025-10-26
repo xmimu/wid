@@ -144,6 +144,8 @@ function getCurrentTab() {
   if (activeTab.id === 'wwise-tab') return 'wwise';
   if (activeTab.id === 'waapi-tab') return 'waapi';
   if (activeTab.id === 'bank-tab') return 'bank';
+  if (activeTab.id === 'config-tab') return null;  // 配置页面不显示搜索区域
+  if (activeTab.id === 'help-tab') return null;    // 帮助页面不显示搜索区域
   return null;
 }
 
@@ -547,7 +549,7 @@ function toggleSearchArea() {
   const currentTab = getCurrentTab();
   const searchArea = document.querySelector('#sharedSearchArea');
   
-  // 如果是配置标签页，隐藏搜索区域；否则显示
+  // 如果是配置标签页或帮助标签页，隐藏搜索区域；否则显示
   if (currentTab === null) {
     searchArea.style.display = 'none';
   } else {

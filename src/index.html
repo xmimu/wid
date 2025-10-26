@@ -35,6 +35,11 @@
             ⚙️ 配置
           </button>
         </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="help-tab" data-bs-toggle="tab" data-bs-target="#help-content" type="button" role="tab" aria-controls="help-content" aria-selected="false">
+            ❓ 关于/帮助
+          </button>
+        </li>
       </ul>
 
       <!-- 共享搜索区域 -->
@@ -377,6 +382,194 @@
             </div>
           </div>
         </div>
+
+        <!-- 标签页 5: 关于/帮助 -->
+        <div class="tab-pane fade" id="help-content" role="tabpanel" aria-labelledby="help-tab">
+          <div class="card-body">
+            <!-- 应用信息 -->
+            <div class="row mb-4 p-3 border rounded">
+              <div class="col-md-12">
+                <div class="text-center mb-4">
+                  <h3 class="mb-3">🎵 WID - Wwise ID 查询工具</h3>
+                  <p class="text-muted mb-0">版本: 0.1.0</p>
+                  <p class="text-muted">高效的 Wwise 音频资源 ID 查询和管理工具</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- 功能介绍 -->
+            <div class="row mb-4 p-3 border rounded">
+              <div class="col-md-12">
+                <h5 class="mb-3">✨ 主要功能</h5>
+                <div class="row">
+                  <div class="col-md-6">
+                    <ul class="list-unstyled">
+                      <li class="mb-2">📁 <strong>Wwise 工程文件查询</strong><br>
+                        <small class="text-muted">直接解析本地 .wproj 文件和相关 XML 资源</small>
+                      </li>
+                      <li class="mb-2">🔌 <strong>WAAPI 实时查询</strong><br>
+                        <small class="text-muted">通过 WebSocket 连接到 Wwise Authoring Tool</small>
+                      </li>
+                      <li class="mb-2">🏦 <strong>SoundBank 查询</strong><br>
+                        <small class="text-muted">解析 SoundbanksInfo.xml 和 JSON 格式文件</small>
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="col-md-6">
+                    <ul class="list-unstyled">
+                      <li class="mb-2">🔍 <strong>多种 ID 类型支持</strong><br>
+                        <small class="text-muted">GUID、ShortID、MediaID 组合查询</small>
+                      </li>
+                      <li class="mb-2">💾 <strong>智能配置管理</strong><br>
+                        <small class="text-muted">多配置保存与快速切换</small>
+                      </li>
+                      <li class="mb-2">📊 <strong>高效结果展示</strong><br>
+                        <small class="text-muted">分页显示、详细信息、即时搜索</small>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 快速入门 -->
+            <div class="row mb-4 p-3 border rounded">
+              <div class="col-md-12">
+                <h5 class="mb-3">🚀 快速入门</h5>
+                <div class="accordion" id="quickStartAccordion">
+                  <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingOne">
+                      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        📁 如何使用 Wwise 工程文件查询
+                      </button>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#quickStartAccordion">
+                      <div class="accordion-body">
+                        <ol>
+                          <li>点击 <strong>"配置"</strong> 标签页</li>
+                          <li>在 <strong>"Wwise 工程配置"</strong> 区域设置包含 .wproj 文件的目录</li>
+                          <li>返回 <strong>"Wwise 工程文件"</strong> 标签页</li>
+                          <li>输入要查询的 ID，选择 ID 类型，点击搜索</li>
+                        </ol>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingTwo">
+                      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                        🔌 如何使用 WAAPI 实时查询
+                      </button>
+                    </h2>
+                    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#quickStartAccordion">
+                      <div class="accordion-body">
+                        <ol>
+                          <li>确保 Wwise Authoring Tool 已启动</li>
+                          <li>在 Wwise 中启用 WAAPI 服务（Project → User Preferences... → Wwise Authoring API）</li>
+                          <li>
+                            <strong>配置浏览器跨域访问</strong>：在 WAAPI 设置中的 "Allow browser connections from:" 字段添加以下地址：
+                            <div class="mt-2 p-2 bg-light border rounded">
+                              <code>http://tauri.localhost,https://tauri.localhost,http://127.0.0.1:1430</code>
+                            </div>
+                            <small class="text-muted">
+                              💡 这些地址用于允许本桌面应用与 Wwise 的 WAAPI 服务进行跨域通信
+                            </small>
+                          </li>
+                          <li>在本工具的 <strong>"配置"</strong> 中设置 WAAPI 连接信息（通常是 127.0.0.1:8080）</li>
+                          <li>点击 <strong>"测试连接"</strong> 确认连接状态</li>
+                        </ol>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingThree">
+                      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                        🏦 如何使用 Bank 目录查询
+                      </button>
+                    </h2>
+                    <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#quickStartAccordion">
+                      <div class="accordion-body">
+                        <ol>
+                          <li>确保已通过 Wwise 生成了 SoundBank 文件</li>
+                          <li>找到包含 <code>SoundbanksInfo.xml</code> 或 <code>.json</code> 文件的目录</li>
+                          <li>在 <strong>"配置"</strong> 标签页的 "Bank 目录配置" 中设置该目录路径</li>
+                          <li>返回 <strong>"Bank 目录"</strong> 标签页</li>
+                          <li>输入要查询的 ID，选择 ID 类型，点击搜索</li>
+                        </ol>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingFour">
+                      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                        💾 如何管理多个配置
+                      </button>
+                    </h2>
+                    <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#quickStartAccordion">
+                      <div class="accordion-body">
+                        <ol>
+                          <li>在 <strong>"配置"</strong> 标签页设置好所有路径和连接信息</li>
+                          <li>在 <strong>"配置管理"</strong> 区域输入配置名称（如"项目A"、"测试环境"）</li>
+                          <li>点击 <strong>"💾 保存"</strong> 按钮</li>
+                          <li>使用 <strong>"当前配置"</strong> 下拉列表快速切换不同配置</li>
+                        </ol>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 技术支持与链接 -->
+            <div class="row mb-4 p-3 border rounded">
+              <div class="col-md-12">
+                <h5 class="mb-3">📞 技术支持与更多信息</h5>
+                <div class="row">
+                  <div class="col-md-6">
+                    <h6 class="text-primary">🔗 项目链接</h6>
+                    <div class="d-grid gap-2">
+                      <button type="button" onclick="openExternalLink('https://github.com/xmimu/wid')" class="btn btn-primary btn-sm d-flex align-items-center justify-content-start">
+                        <span class="me-2">📱</span>GitHub 仓库
+                      </button>
+                      <button type="button" onclick="openExternalLink('https://github.com/xmimu/wid/blob/master/README.md')" class="btn btn-primary btn-sm d-flex align-items-center justify-content-start">
+                        <span class="me-2">📖</span>完整说明文档
+                      </button>
+                      <button type="button" onclick="openExternalLink('https://github.com/xmimu/wid/releases')" class="btn btn-primary btn-sm d-flex align-items-center justify-content-start">
+                        <span class="me-2">📦</span>下载最新版本
+                      </button>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <h6 class="text-success">💬 问题反馈</h6>
+                    <div class="d-grid gap-2">
+                      <button type="button" onclick="openExternalLink('https://github.com/xmimu/wid/issues')" class="btn btn-success btn-sm d-flex align-items-center justify-content-start">
+                        <span class="me-2">🐛</span>报告问题
+                      </button>
+                      <button type="button" onclick="openExternalLink('https://github.com/xmimu/wid/discussions')" class="btn btn-success btn-sm d-flex align-items-center justify-content-start">
+                        <span class="me-2">💭</span>讨论交流
+                      </button>
+                      <button type="button" onclick="openExternalLink('mailto:1101588023@qq.com')" class="btn btn-success btn-sm d-flex align-items-center justify-content-start">
+                        <span class="me-2">✉️</span>邮件联系
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 版权信息 -->
+            <div class="row p-3 border rounded bg-light">
+              <div class="col-md-12 text-center">
+                <p class="mb-2">
+                  <strong>技术栈</strong>: Tauri 2.0 + Rust + HTML5 + JavaScript + Bootstrap 5
+                </p>
+                <p class="mb-0 text-muted">
+                  Made with ❤️ by <button type="button" onclick="openExternalLink('https://github.com/xmimu')" class="btn btn-link p-0 text-muted text-decoration-none" style="vertical-align: baseline;">xmimu</button> 
+                  | © 2024 MIT License
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -391,5 +584,7 @@
   <script src="js/waapi-query.js"></script>
   <!-- Main Application -->
   <script src="js/main.js"></script>
+  <!-- External Links Module -->
+  <script src="js/external-links.js"></script>
 </body>
 </html>

@@ -8,6 +8,7 @@
     "dialog:allow-open",
     "dialog:allow-message",
     "dialog:default",
-    "opener:default"
+    "opener:default",
+    "opener:allow-open-url"
   ]
 }
