@@ -14,6 +14,115 @@ const config = {
   }
 };
 
+// 配置管理对象
+const configManager = {
+  // 获取所有已保存的配置
+  getSavedConfigs() {
+    const savedConfigs = localStorage.getItem('saved_configs');
+    return savedConfigs ? JSON.parse(savedConfigs) : {};
+  },
+
+  // 保存配置
+  saveConfig(name, configData) {
+    const savedConfigs = this.getSavedConfigs();
+    savedConfigs[name] = {
+      ...configData,
+      savedAt: new Date().toISOString()
+    };
+    localStorage.setItem('saved_configs', JSON.stringify(savedConfigs));
+    this.updateConfigSelect();
+  },
+
+  // 加载配置
+  loadConfig(name) {
+    const savedConfigs = this.getSavedConfigs();
+    if (savedConfigs[name]) {
+      const configData = savedConfigs[name];
+      
+      // 更新全局配置对象
+      config.wwise.projPath = configData.wwise?.projPath || '';
+      config.waapi.host = configData.waapi?.host || '127.0.0.1';
+      config.waapi.port = configData.waapi?.port || '8080';
+      config.bank.dirPath = configData.bank?.dirPath || '';
+      
+      // 保存到localStorage
+      saveConfig();
+      
+      // 更新UI
+      this.updateConfigUI();
+      
+      // 设置当前选中的配置
+      localStorage.setItem('current_config', name);
+      document.querySelector('#configSelect').value = name;
+      
+      showMessage(`✅ 配置 "${name}" 加载成功`);
+      checkConfigAndShowAlert();
+    }
+  },
+
+  // 删除配置
+  deleteConfig(name) {
+    if (name === 'default') {
+      showMessage('❌ 无法删除默认配置');
+      return;
+    }
+    
+    const savedConfigs = this.getSavedConfigs();
+    if (savedConfigs[name]) {
+      delete savedConfigs[name];
+      localStorage.setItem('saved_configs', JSON.stringify(savedConfigs));
+      
+      // 如果删除的是当前配置，切换到默认配置
+      const currentConfig = localStorage.getItem('current_config');
+      if (currentConfig === name) {
+        localStorage.setItem('current_config', 'default');
+        document.querySelector('#configSelect').value = 'default';
+      }
+      
+      this.updateConfigSelect();
+      showMessage(`✅ 配置 "${name}" 删除成功`);
+    }
+  },
+
+  // 更新配置选择下拉列表
+  updateConfigSelect() {
+    const configSelect = document.querySelector('#configSelect');
+    const savedConfigs = this.getSavedConfigs();
+    
+    // 清空现有选项（除了默认配置）
+    configSelect.innerHTML = '<option value="default">默认配置</option>';
+    
+    // 添加保存的配置
+    Object.keys(savedConfigs).forEach(name => {
+      const option = document.createElement('option');
+      option.value = name;
+      option.textContent = name;
+      configSelect.appendChild(option);
+    });
+    
+    // 恢复当前选中的配置
+    const currentConfig = localStorage.getItem('current_config') || 'default';
+    configSelect.value = currentConfig;
+  },
+
+  // 更新配置UI
+  updateConfigUI() {
+    document.querySelector('#wwiseProjPath').value = config.wwise.projPath;
+    document.querySelector('#waapiHost').value = config.waapi.host;
+    document.querySelector('#waapiPort').value = config.waapi.port;
+    document.querySelector('#bankDirPath').value = config.bank.dirPath;
+  },
+
+  // 获取当前配置数据
+  getCurrentConfigData() {
+    return {
+      wwise: { ...config.wwise },
+      waapi: { ...config.waapi },
+      bank: { ...config.bank }
+    };
+  }
+};
+
 // 分页数据存储
 const paginationData = {
   wwise: { currentPage: 1, pageSize: 20, totalResults: [] },
@@ -448,6 +557,9 @@ function toggleSearchArea() {
 
 // 初始化
 window.addEventListener("DOMContentLoaded", () => {
+  // 初始化配置管理
+  configManager.updateConfigSelect();
+  
   // 初始化配置显示
   document.querySelector('#wwiseProjPath').value = config.wwise.projPath;
   document.querySelector('#waapiHost').value = config.waapi.host;
@@ -467,6 +579,73 @@ window.addEventListener("DOMContentLoaded", () => {
       checkConfigAndShowAlert();
       toggleSearchArea();
     });
+  });
+
+  // 配置管理事件监听器
+  document.querySelector('#saveConfigBtn').addEventListener('click', () => {
+    const configName = document.querySelector('#configName').value.trim();
+    if (!configName) {
+      showMessage('❌ 请输入配置名称');
+      return;
+    }
+    
+    if (configName === 'default') {
+      showMessage('❌ 不能使用 "default" 作为配置名称');
+      return;
+    }
+    
+    // 获取当前配置数据
+    const currentConfigData = configManager.getCurrentConfigData();
+    
+    // 保存配置
+    configManager.saveConfig(configName, currentConfigData);
+    
+    // 清空输入框
+    document.querySelector('#configName').value = '';
+    
+    // 设置为当前配置
+    localStorage.setItem('current_config', configName);
+    document.querySelector('#configSelect').value = configName;
+    
+    showMessage(`✅ 配置 "${configName}" 保存成功`);
+  });
+
+  document.querySelector('#loadConfigBtn').addEventListener('click', () => {
+    const selectedConfig = document.querySelector('#configSelect').value;
+    if (selectedConfig === 'default') {
+      // 加载默认配置（清空所有配置）
+      config.wwise.projPath = '';
+      config.waapi.host = '127.0.0.1';
+      config.waapi.port = '8080';
+      config.bank.dirPath = '';
+      
+      saveConfig();
+      configManager.updateConfigUI();
+      localStorage.setItem('current_config', 'default');
+      
+      showMessage('✅ 默认配置加载成功');
+      checkConfigAndShowAlert();
+    } else {
+      configManager.loadConfig(selectedConfig);
+    }
+  });
+
+  document.querySelector('#deleteConfigBtn').addEventListener('click', () => {
+    const selectedConfig = document.querySelector('#configSelect').value;
+    if (selectedConfig === 'default') {
+      showMessage('❌ 无法删除默认配置');
+      return;
+    }
+    
+    if (confirm(`确定要删除配置 "${selectedConfig}" 吗？`)) {
+      configManager.deleteConfig(selectedConfig);
+    }
+  });
+
+  // 配置选择下拉列表变化事件
+  document.querySelector('#configSelect').addEventListener('change', (e) => {
+    const selectedConfig = e.target.value;
+    localStorage.setItem('current_config', selectedConfig);
   });
 
   // 配置输入框监听（自动保存）
@@ -519,6 +698,13 @@ window.addEventListener("DOMContentLoaded", () => {
       if (tab) {
         performSearch(tab);
       }
+    }
+  });
+
+  // 配置名称输入框按Enter键保存
+  document.querySelector('#configName').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      document.querySelector('#saveConfigBtn').click();
     }
   });
 });

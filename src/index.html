@@ -262,6 +262,45 @@
         <!-- 标签页 4: 配置 -->
         <div class="tab-pane fade" id="config-content" role="tabpanel" aria-labelledby="config-tab">
           <div class="card-body">
+            <!-- 配置管理区域 -->
+            <div class="row mb-4 p-3 border rounded">
+              <div class="col-md-12">
+                <h5 class="mb-3">💾 配置管理</h5>
+                <div class="row">
+                  <div class="col-md-6">
+                    <label for="configSelect" class="form-label"><strong>当前配置</strong></label>
+                    <div class="input-group">
+                      <select class="form-select" id="configSelect">
+                        <option value="default">默认配置</option>
+                      </select>
+                      <button class="btn btn-outline-primary" type="button" id="loadConfigBtn">
+                        📂 加载
+                      </button>
+                      <button class="btn btn-outline-danger" type="button" id="deleteConfigBtn">
+                        🗑️ 删除
+                      </button>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <label for="configName" class="form-label"><strong>保存新配置</strong></label>
+                    <div class="input-group">
+                      <input 
+                        type="text" 
+                        class="form-control" 
+                        id="configName" 
+                        placeholder="输入配置名称">
+                      <button class="btn btn-success" type="button" id="saveConfigBtn">
+                        💾 保存
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <small class="text-muted d-block mt-2">
+                  💡 提示: 可以为不同的项目或环境保存不同的配置，方便快速切换
+                </small>
+              </div>
+            </div>
+
             <!-- Wwise工程配置 -->
             <div class="row mb-4 p-3 border rounded">
               <div class="col-md-12">
